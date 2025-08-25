@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GenZstore</title>
+    
+    <!-- ======================= CSS STYLES START HERE ======================= -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        :root {
+            --bg-gradient: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            --card-bg: rgba(255, 255, 255, 0.35);
+            --text-dark: #2c3e50;
+            --text-light: #576574;
+            --accent-color: #3498db;
+            --accent-hover: #2980b9;
+            --border-color: rgba(255, 255, 255, 0.5);
+            --neon-cyan: #00e5ff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-image: var(--bg-gradient); color: var(--text-dark); line-height: 1.7; overflow-x: hidden; min-height: 100vh; position: relative; }
+        body.modal-open { overflow: hidden; }
+        body::before, body::after { content: ''; position: absolute; z-index: -1; border-radius: 50%; filter: blur(100px); }
+        body::before { width: 300px; height: 300px; background-color: rgba(52, 152, 219, 0.2); top: 5%; left: 10%; }
+        body::after { width: 250px; height: 250px; background-color: rgba(0, 229, 255, 0.15); bottom: 10%; right: 15%; }
+
+        /* === PRELOADER STYLING === */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background-color: #fdfbfb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+        #preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(0, 0, 0, 0.1);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        body.loading #main-content {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .container { width: 90%; max-width: 1200px; margin: 2rem auto; padding: 0 15px; }
+        h1 { font-size: 3rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
+        h2 { font-size: 2.2rem; font-weight: 400; color: var(--text-light); text-align: center; margin-bottom: 1.5rem; }
+
+        /* === GENDER FILTER BUTTONS (BIG BUTTONS) === */
+        .gender-filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .gender-btn {
+            padding: 0.6rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .gender-btn:hover {
+            background-color: var(--accent-hover);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(41, 128, 185, 0.3);
+        }
+        .gender-btn.active {
+            background-color: var(--accent-color);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        /* === SUBCATEGORY SELECT DROPDOWN STYLING === */
+        .select-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+        .select-container label {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+        #subcategory-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding: 0.9rem 3.5rem 0.9rem 2rem;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--text-dark);
+            background-color: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            cursor: pointer;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 1.5rem center;
+            background-size: .7em auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        #subcategory-select:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 6px 25px rgba(52, 152, 219, 0.2);
+        }
+        #subcategory-select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.3);
+        }
+
+        #product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; align-items: start; }
+        .product-card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
+        .product-card:hover { transform: translateY(-12px); box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15); }
+        .product-card--focused { overflow: visible; z-index: 10; }
+        .product-image { width: 100%; }
+        .product-info { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .product-name { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .product-price { font-size: 1.3rem; font-weight: 700; color: var(--accent-color); margin-bottom: 0.5rem; }
+        .product-description { font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem; font-weight: 300; }
+        .custom-select-wrapper { position: relative; margin-bottom: 1.5rem; }
+        .select-selected { background-color: #fff; padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid #ddd; color: var(--text-light); cursor: pointer; transition: border-color 0.3s ease; position: relative; user-select: none; }
+        .select-selected:hover { border-color: var(--accent-color); }
+        .select-selected::after { content: ""; position: absolute; top: 50%; right: 15px; transform: translateY(-50%); width: 0; height: 0; border: 6px solid transparent; border-color: var(--text-light) transparent transparent transparent; }
+        .select-items { position: absolute; background-color: rgba(18, 24, 45, 0.9); backdrop-filter: blur(10px); top: calc(100% + 5px); left: 0; right: 0; z-index: 99; border-radius: 12px; border: 1px solid var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan); overflow: hidden; display: none; }
+        .select-items div { color: #fff; padding: 10px 16px; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; }
+        .select-items div:hover { background-color: var(--neon-cyan); color: #000; }
+        .custom-select-wrapper select { display: none; }
+        .buy-now-btn { background-color: var(--accent-color); color: #fff; border: none; padding: 0.9rem 1rem; border-radius: 10px; cursor: pointer; text-transform: uppercase; font-weight: 600; transition: background-color 0.3s ease, transform 0.2s ease; margin-top: auto; }
+        .buy-now-btn:hover { background-color: var(--accent-hover); transform: scale(1.03); }
+        .buy-now-btn:active { transform: scale(0.98); }
+
+        footer { text-align: center; padding: 2.5rem 0; margin-top: 4rem; border-top: 1px solid #e0e0e0; }
+        footer p { font-size: 1rem; font-weight: 300; color: var(--text-light); margin-bottom: 1rem; }
+        .footer-links { display: flex; justify-content: center; align-items: center; gap: 20px; }
+        .footer-links a, #admin-access-link { color: var(--accent-color); text-decoration: none; font-weight: 600; }
+        #admin-access-link { cursor: pointer; }
+        .social-link a { display: inline-block; transition: transform 0.3s ease; }
+        .social-link a:hover { transform: scale(1.1); }
+        .social-link svg { width: 32px; height: 32px; fill: var(--text-light); transition: fill 0.3s ease; }
+        .social-link a:hover svg { fill: var(--accent-color); }
+
+        .modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-container { background: rgba(30, 30, 50, 0.5); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(0, 229, 255, 0.5); border-radius: 20px; padding: 2.5rem; width: 90%; max-width: 500px; color: #fff; position: relative; box-shadow: 0 0 15px rgba(0, 229, 255, 0.3), 0 0 30px rgba(0, 229, 255, 0.2); transform: scale(0.9); transition: transform 0.3s ease; max-height: 85vh; overflow-y: auto; }
+        .modal-overlay.active .modal-container { transform: scale(1); }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; transition: transform 0.2s ease; user-select: none; }
+        .close-btn:hover { transform: scale(1.2); }
+        .modal-form h3 { text-align: center; margin-bottom: 1rem; font-weight: 600; color: var(--neon-cyan); text-shadow: 0 0 5px var(--neon-cyan); }
+        .form-product-details { text-align: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(0, 229, 255, 0.3); padding-bottom: 1rem; }
+        .form-product-details p { margin: 0.2rem 0; }
+        #form-product-name { font-weight: 600; font-size: 1.1rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 300; }
+        .form-group input { width: 100%; padding: 0.8rem; background: transparent; border: 1px solid var(--neon-cyan); border-radius: 8px; color: #fff; font-size: 1rem; transition: box-shadow 0.3s ease; }
+        .form-group input:focus { outline: none; box-shadow: 0 0 10px var(--neon-cyan); }
+        .form-group input::placeholder { color: rgba(255, 255, 255, 0.5); }
+        .modal-btn { width: 100%; padding: 0.9rem; border: none; border-radius: 8px; background-color: var(--neon-cyan); color: #000; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+        .modal-btn:hover { background-color: #fff; box-shadow: 0 0 15px var(--neon-cyan); }
+        #admin-login-error { color: #ff4757; text-align: center; margin-top: 1rem; height: 1em; }
+        #admin-panel-modal-container { max-width: 700px; }
+        #admin-links-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+        #admin-links-table th, #admin-links-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(0, 229, 255, 0.3); vertical-align: middle; }
+        #admin-links-table th { color: var(--neon-cyan); }
+        #admin-links-table a { display: inline-block; padding: 8px 18px; border: 1px solid var(--neon-cyan); border-radius: 8px; color: var(--neon-cyan); background-color: transparent; text-decoration: none; font-weight: 600; transition: all 0.3s ease; cursor: pointer; }
+        #admin-links-table a:hover { background-color: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan); transform: translateY(-2px); }
+
+        @media (max-width: 768px) { 
+            h1 { font-size: 2.5rem; } 
+            h2 { font-size: 1.8rem; } 
+        }
+
+        /* === EXCLUSIVE PRODUCT STYLING === */
+        @keyframes animate-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .product-card--exclusive::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background: linear-gradient(125deg, #ffc371, #ff5f6d, #833ab4, #00d4ff);
+            background-size: 400% 400%;
+            animation: animate-gradient 10s ease infinite;
+            opacity: 0.15;
+            transition: opacity 0.3s ease;
+        }
+        .product-card--exclusive:hover::before {
+            opacity: 0.25;
+        }
+        .product-card .product-image,
+        .product-card .product-info {
+            position: relative;
+            z-index: 1;
+        }
+        .product-card--exclusive::after {
+            content: 'EXCLUSIVE';
+            position: absolute;
+            top: 10px;
+            right: -35px;
+            z-index: 2;
+            background-color: #ffae00;
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 5px 30px;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+    <!-- ======================= CSS STYLES END HERE ======================= -->
+</head>
+<body>
+    <div id="preloader"><div class="spinner"></div></div>
+
+    <div id="main-content">
+        <header class="container">
+            <h1>GenZstore</h1>
+        </header>
+        <main class="container">
+            <section id="products">
+                <h2>Discover Your Style</h2>
+                <div class="gender-filter-buttons">
+                    <button class="gender-btn active" data-gender="boy">For Boys</button>
+                    <button class="gender-btn" data-gender="girl">For Girls</button>
+                    <button class="gender-btn" data-gender="other">Others</button>
+                    <button class="gender-btn" data-gender="exclusive">Exclusive</button>
+                </div>
+                <div class="select-container" id="subcategory-container">
+                    <label for="subcategory-select">Select a Category:</label>
+                    <select id="subcategory-select"></select>
+                </div>
+                <div id="product-grid">
+                    <!-- Products will be loaded here by JavaScript -->
+                </div>
+            </section>
+        </main>
+        <footer>
+            <span>Our products will be uploaded soon...</span>
+            <p>Created by AKASH DUBEY</p>
+            <div class="footer-links">
+                <div class="social-link">
+                    <a href="https://www.instagram.com/undermaintnance?igsh=bmx3NDV2eGlsYjY2" target="_blank" title="Follow on Instagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.74 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.74 24 12 24s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98C23.986 15.667 24 15.26 24 12s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98C15.667.014 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"/></svg></a>
+                </div>
+                <span id="admin-access-link">Admin Access</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Order Modal -->
+    <div id="order-modal-overlay" class="modal-overlay">
+        <div id="order-form-container" class="modal-container">
+            <span class="close-btn">&times;</span>
+            <form id="order-form" class="modal-form">
+                <h3>Confirm Your Order</h3>
+                <div class="form-product-details">
+                    <p id="form-product-name-display"></p>
+                    <p>Price: ₹<span id="form-product-price-display"></span> per item | Size: <span id="form-product-size-display"></span></p>
+                </div>
+                <div class="form-group"><label for="customer-name">Your Name</label><input type="text" id="customer-name" placeholder="Enter your full name" required></div>
+                <div class="form-group"><label for="customer-phone">Your WhatsApp Number</label><input type="tel" id="customer-phone" placeholder="Enter your phone number" required></div>
+                <div class="form-group"><label for="customer-address">Address</label><input type="text" id="customer-address" placeholder="Enter your address" required></div>
+                <div class="form-group"><label for="customer-quantity">Quantity</label><input type="number" id="customer-quantity" value="1" min="1" required></div>
+                <button type="submit" class="modal-btn">Order Now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal-overlay" class="modal-overlay">
+        <div class="modal-container">
+            <span class="close-btn">&times;</span>
+            <form id="admin-login-form" class="modal-form">
+                <h3>Admin Access</h3>
+                <div class="form-group"><label for="admin-password">Password</label><input type="password" id="admin-password" required></div>
+                <button type="submit" class="modal-btn">Login</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Admin Panel Modal (Source Links Only) -->
+    <div id="admin-panel-modal-overlay" class="modal-overlay">
+        <div id="admin-panel-modal-container" class="modal-container">
+            <span class="close-btn">&times;</span>
+            <h3>Product Source Links</h3>
+            <table id="admin-links-table">
+                <thead><tr><th>Product Name</th><th>Source Link</th></tr></thead>
+                <tbody id="admin-links-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ======================= JAVASCRIPT LOGIC START HERE ======================= -->
+    <script>
+        // ===== PRELOADER LOGIC =====
+        const preloader = document.getElementById('preloader');
+        const mainContent = document.getElementById('main-content');
+        window.onload = () => {
+            preloader.classList.add('hidden');
+            mainContent.style.opacity = '1';
+        };
+
+
+        // ===== MAIN SCRIPT LOGIC =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIGURATION ---
+            const ADMIN_PASSWORD = 'AKASH7777';
+            const ADMIN_PHONE_NUMBER = '7822976749';
+            
+            // --- ALL PRODUCTS ARE STORED HERE ---
+            const allProducts = [
+                // --- BOY PRODUCTS ---
+                { name: 'OXO Printed T-Shirt Combo', price: 160, imageUrl: 'https://rukminim2.flixcart.com/image/704/844/xif0q/t-shirt/t/i/i/m-fk-sap-2-b1261-oxo-pis1238-zoom-jaqque-original-imah28tdj7upwtg2.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.wishlink.com/share/sajvn', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: "Men's Checkered Casual Shirt", price: 225, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/shopsy-shirt/7/2/n/m-iut-459-mark-leurent-original-imahchatpwhphtvc.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.wishlink.com/share/nm7q2h', category: ['shirt'], gender: 'boy', exclusive: true },
+                { name: "Men's Analog Leather Strap Watch", price: 150, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-watch/7/c/9/1-sil-jmh-enterprise-men-original-imagw26ugszbhwnm.jpeg?q=60&crop=false', sizes: ['One Size'], description: 'Min. Order: 2 items', sourceLink: 'https://www.wishlink.com/share/7sujc', category: ['watches'], gender: 'boy', exclusive: false },
+                { name: "Men's Sport Shorts Combo", price: 132, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-short/v/h/z/xxl-shp-d-gry-a-gry-xxl-regular-shorts-flyzen-men-original-imahbtgbn68rbh4v.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.wishlink.com/share/n696ws', category: ['shorts'], gender: 'boy', exclusive: false },
+                { name: "Men's Textured Casual Shirt", price: 189, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shirt/y/1/b/m-f-popcorn-white-black-vrlooks-original-imahbydsrqf4ujfv.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.wishlink.com/share/s29d5', category: ['shirt'], gender: 'boy', exclusive: false },
+                { name: 'Men Printed Polo Neck White T-Shirt', price: 499, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/t-shirt/z/j/v/xl-polo-losangeles-culish-original-imah6qzsru23ht5z.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/culish-printed-men-polo-neck-white-t-shirt/p/itm3416e08a55e06?pid=TSHH6QZT6VXH65NQ', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Men Loose Fit Mid Rise Light Blue Jeans', price: 529, imageUrl: 'https://rukminim2.flixcart.com/image/768/922/xif0q/jean/y/b/f/36-mxn-baggy-103-meixn-original-imahepdffqwhxxzb.jpeg?q=60&crop=false', sizes: ['28', '30', '32', '34', '36'], description: 'Min. Order: 1 item', sourceLink: 'https://dl.flipkart.com/s/fS6rUauuuN', category: ['pant-boys'], gender: 'boy', exclusive: false },
+                { name: 'Printed Men Pink, Grey T-Shirt', price: 99, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/s/n/n/m-men-typography-round-neck-cotton-blend-red-t-shirt-rimmy-original-imah7dfctrazvfdm.jpeg?q=60&crop=false', sizes: ['M'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/printed-men-pink-grey-t-shirt/p/itm4623010683733?pid=XPTH3Z3PFVBZEZKT', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Men Loose Fit Mid Rise Black Jeans', price: 439, imageUrl: 'https://rukminim2.flixcart.com/image/768/1152/xif0q/jean/j/w/w/34-denimj-lb-baggy48-denim-fit-original-imahf55zgnx8r7wb.jpeg?q=60&crop=false', sizes: ['28', '30', '32', '34', '36'], description: 'Min. Order: 1 item', sourceLink: 'https://dl.flipkart.com/s/cmla6jNNNN', category: ['pant-boys'], gender: 'boy', exclusive: false },
+                { name: 'Premium Stylish Sneakers For Men', price: 444, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shoe/h/3/a/10-kus2003-blue-10-kaushal-blue-original-imah2d4vztagfnat.jpeg?q=60&crop=false', sizes: ['6', '7', '8'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/comfortable-premium-stylish-unique-trendy-popular-kus2003-blue-men-sneakers/p/itmd21d52fc3bdde?pid=EOEH4PHKAAJXV2JB', category: ['footwear'], gender: 'boy', exclusive: false },
+                { name: 'Men Checkered Zip Neck White T-Shirt', price: 399, imageUrl: 'https://rukminim2.flixcart.com/image/768/922/xif0q/t-shirt/b/r/m/l-64518810-try-this-original-imah9b23gtxksszv.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Min. Order: 1 item', sourceLink: 'https://dl.flipkart.com/s/cmKEQpNNNN', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Solid Men Track Suit - Black', price: 439, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/track-suit/x/6/p/xl-tk-black-02-xl-abdani-original-imah92hzvzxybsnm.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/abdani-solid-men-track-suit/p/itm5c4bc7dd261f3?pid=TKSHFYDM6CBGVJRH', category: ['t-shirt', 'shorts'], gender: 'boy', exclusive: false },
+                { name: 'Solid Men Track Suit - Cream', price: 439, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/track-suit/7/i/d/xl-tk-cream-02-xl-abdani-original-imah92hfsf4cfvga.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/abdani-solid-men-track-suit/p/itmc1546ef02ecc4?pid=TKSHFYDMHFYTSFAF', category: ['t-shirt'], gender: 'boy', exclusive: true },
+                { name: 'Printed Men Beige T-Shirt', price: 342, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/c/f/h/m-sy-ovts-1401-camel-flect-original-imahbfuqhmupbuvq.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/printed-men-beige-t-shirt/p/itmc3c3febe346e4?pid=XPTHBFUQXTFW33PX', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Printed Men purple T-Shirt', price: 342, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/shopsy-t-shirt/p/f/k/l-sy-ovts-1401-lavender-flect-original-imahbfuqasuut5sc.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/printed-men-purple-t-shirt/p/itm1fdfac4a252d8?pid=XPTHBFUQQWGQ5GKB', category: ['t-shirt'], gender: 'boy', exclusive: true },
+                { name: 'Printed Men Black T-Shirt', price: 342, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/shopsy-t-shirt/s/1/p/xxl-sy-ovts-1402-black-flect-original-imahbha3xkmyfqjn.jpeg?q=60&crop=false', sizes: ['XL', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/printed-men-black-t-shirt/p/itm8ab8e12ce6385?pid=XPTHBFUQJHTMX7RT', category: ['t-shirt'], gender: 'boy', exclusive: true },
+                { name: 'Striped Men Grey T-Shirt', price: 149, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/g/t/v/m-shopsy363134-rimmy-textile-original-imahypffzsghcjdm.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/striped-men-grey-t-shirt/p/itma4c804c51701a?pid=XPTGHUUKZFZXK9YD', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Striped Men Yellow T-Shirt', price: 159, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/t-shirt/l/d/9/xl-fk-mu1251-side-patta-3-oishee-original-imah2h9gwcrb8feb.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/striped-men-yellow-t-shirt/p/itmdde54bd113163?pid=XPTGHUUKZVHW4MTJ', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Color Block Men White, Black T-Shirt', price: 189, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/v/q/v/m-cb-wb-516-m-farrowx-original-imah8vrdfdvdnmsf.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/color-block-men-white-black-t-shirt/p/itm4bbf69efad52c?pid=XPTGNKV2NRVBJYGH', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Color Block Men Black T-Shirt', price: 199, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/shopsy-t-shirt/j/q/o/m-black-nike-m-farrowx-original-imah8vrdjvauk7rz.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/color-block-men-black-t-shirt/p/itm7d4f1b834957c?pid=XPTGMPZUMDYTYRQU', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Printed Men White, Black T-Shirt', price: 101, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/x/r/k/xl-fh-tshirt-combo2-fashionhub-original-imagqvzvpbygtuhe.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL'], description: 'Color: White, black', sourceLink: 'https://www.shopsy.in/printed-men-white-black-t-shirt/p/itm20682c2b13e26?pid=XPTGQVZWA58UR8CC', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Printed Men Green, Grey T-Shirt', price: 106, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/k/s/4/m-zmbs-vrma-original-imah5gecxbyudmgb.jpeg?q=60&crop=false', sizes: ['M'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/printed-men-green-grey-t-shirt/p/itmd914b1d4a871f?pid=XPTH5GECYAVQYXJD', category: ['t-shirt'], gender: 'boy', exclusive: false },
+                { name: 'Printed Men Orange, White T-Shirt', price: 150, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/l/h/q/m-zmbs-vrma-original-imahcecufy7arzpd.jpeg?q=60&crop=false', sizes: ['L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/printed-men-orange-white-t-shirt/p/itmf16dc2ac6496e?pid=XPTHCEDYNYZGHVKZ', category: ['t-shirt'], gender: 'boy', exclusive: true },
+                { name: 'Printed Men White, Black T-Shirt', price: 150, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/shopsy-t-shirt/x/p/p/m-zmbs-vrma-original-imahcecu7emq7hhz.jpeg?q=60&crop=false', sizes: ['L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/printed-men-white-black-t-shirt/p/itmc9222be4e6a10?pid=XPTHCEDYFKNDHYZZ', category: ['t-shirt'], gender: 'boy', exclusive: true },
+                { name: 'Men Striped Casual Green Shirt', price: 299, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-shirt/s/z/o/m-hkv-111-sh-aadi-original-imah4dsgamvb9dpg.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Introducing our remarkable Striped Shirt, a true fashion statement that combines classic charm with modern style. Carefully curated and crafted with meticulous attention to detail, this shirt is desig... ', sourceLink: 'https://www.shopsy.in/men-striped-casual-green-shirt/p/itm74dbf0db53d06?pid=XSRGTYZFSHA7ZZK3&marketplace=FLIPKART&cmpid=product.share.pp&_refId=PP.58a85566-04f7-457f-a97c-00d2b6a7f87f.XSRGTYZFSHA7ZZK3&lid=LSTXSRGTYZFSHA7ZZK3DOINEN&_appId=CL', category: ['shirt'], gender: 'boy', exclusive: true },
+                
+                // --- GIRL PRODUCTS ---
+                { name: 'Printed Women White, Pink T-Shirt', price: 207, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/j/m/b/xl-combo-polyester-women-white-peach-tshirt-attirea-original-imahdp2v7ysgzg9z.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/printed-women-white-pink-t-shirt/p/itmcc30846f493c8?pid=XPTHDP2VKXA7V4EB', category: ['t-shirt', 'shorts'], gender: 'girl', exclusive: false },
+                { name: 'Women Red Dress', price: 429, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/shopsy-dress/f/t/q/m-dr11324-sheetal-associates-original-imah8q42erzuhuzv.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/women-maxi-red-dress/p/itmffbb61d9a40bf?pid=XDRH8Q44ZMKHNE2Z', category: ['dress'], gender: 'girl', exclusive: true },
+                { name: 'Women Kurti and Dupatta Set', price: 269, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-ethnic-set/g/i/t/xxl-1k1df-einfach-gehen-original-imah3qy3mnehcun5.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/women-kurta-dupatta-set/p/itmb26ff4f349658?pid=SEVH3QY8HZY2UCTV', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Kurti and Pant Set', price: 399, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/ethnic-set/8/m/u/xxl-straightpinkbandejset-jmenterprises-original-imahyg89auwzeuhv.jpeg?q=60&crop=false', sizes: ['S', 'M', 'XL', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/women-kurta-pant-set/p/itm3289fed670863?pid=SEVGGJG4HQ5FEDQC', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Kurti, Pant & Dupatta Set - Black', price: 196, imageUrl: 'https://rukminim1.flixcart.com/image/770/924/xif0q/ethnic-set/c/q/v/xl-fg-1043-black-xl-mf-hayat-original-imaghgyjrh9yjxrf.jpeg?q=60&crop=false', sizes: ['XXS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.meesho.com/s/p/35pwo2?utm_source=s_cc', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Kurti, Pant & Dupatta Set - Green', price: 196, imageUrl: 'https://rukminim1.flixcart.com/image/770/924/xif0q/ethnic-set/5/d/a/l-fg-1043-green-l-mf-hayat-original-imaghgyj6jwx2zmz.jpeg?q=60&crop=false', sizes: ['XXS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.meesho.com/s/p/35pwo3?utm_source=s_cc', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Kurti, Pant & Dupatta Set - Red', price: 196, imageUrl: 'https://images-r.meesho.com/images/products/75734782/mehny_512.avif', sizes: ['XXS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.meesho.com/s/p/35pwo4?utm_source=s_cc', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Embroidered Kurti (Purple)', price: 249, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-kurta/p/s/r/xl-mw-sop-01-welcomekurtis-original-imah4n6amz9nrebg.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/women-embroidered-kurta/p/itm093986c15f4dd?pid=KUUGZFWYPZAAMBMX', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Chikan Embroidery Kurti (Multicolor)', price: 199, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-kurta/p/m/m/s-pompom-top-combo-viranchi-original-imagusuz6mhmaykd.jpeg?q=60&crop=false', sizes: ['S', 'M', 'XL', 'XXL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/women-chikan-embroidery-kurta/p/itm4303220f00595?pid=KUUGWMEFSZH9PFFQ', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Chikan Embroidery Kurti (Multicolor)', price: 221, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/shopsy-kurta/j/y/x/xl-pompom-top-combo-viranchi-original-imagusuzkwshg4bg.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL', '3XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/women-chikan-embroidery-kurta/p/itmba19b2c5ea756?pid=KUUGWMDPBYNCAFG7', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Chikan Embroidery Kurti (Multicolor)', price: 229, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-kurta/t/o/3/m-pompom-top-combo-viranchi-original-imagusuzm3akqebb.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL', '3XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/women-chikan-embroidery-kurta/p/itmaa309db83d321?pid=KUUGWME2TZGUFZ94', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Printed Kurti (Multicolor)', price: 264, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/kurta/h/b/p/s-bada-gala-maroon-fingure-pink-auzaai-collection-original-imahdugyrsjtfvhg.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL', '3XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/women-printed-kurta/p/itm0e5599a444995?pid=KUUHDVJPRWAQZGHK', category: ['dress'], gender: 'girl', exclusive: false },
+                { name: 'Women Kurti and Dupatta Set', price: 499, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-kurta/x/a/3/xl-rani-pink-1-fillwork-original-imahbzvpryxg38ey.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/women-kurta-dupatta-set/p/itm16ff359cc6539?pid=SEVHBPK76J4RFVZG', category: ['dress'], gender: 'girl', exclusive: false },
+                
+                // --- NEWLY ADDED BOY'S PRODUCT ---
+                { name: 'Men Black Sandals', price: 379, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/l3ahpjk0/shopsy-sandal/v/p/z/9-sportblk-sport-black-original-imagefqysrzchxnh.jpeg?q=60&crop=false', sizes: ['7', '8', '9'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/men-black-sandals/p/itm512d114616e38?pid=XSNGG9Z5DHXZYT3S', category: ['footwear'], gender: 'boy', exclusive: false }
+            ];
+            
+            // --- OTHERS CATEGORY PRODUCTS (can be added here) ---
+            const otherProducts = [
+                { name: 'Wayfarer, Sports, Spectacle , Retro Square, Oval Sunglasses', price: 150, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/sunglass/v/y/k/free-size-rdy076-imported-wayfare-roadway-original-imah3geegppq4gzk.jpeg?q=60&crop=false', sizes: ['Free Size'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/wayfarer-sports-spectacle-retro-square-oval-sunglasses/p/itm14b60b56fa74f?pid=SXNHAKT9CDHMXFYF', category: ['glasses'], gender: 'other', exclusive: true },
+                { name: 'winelam SRK tam doa diptyqeu trending Eau de Parfum - 50 ml', price: 699, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/perfume/l/j/u/50-srk-tam-dao-diptyque-trending-perfume-eau-de-parfum-winelam-original-imahbxugzsnwpejh.jpeg?q=60&crop=false', sizes: ['50 ml'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/winelam-srk-tam-doa-diptyqeu-trending-eau-de-parfum-50-ml/p/itm6c347db5fdee3?pid=VSZHDNXYNYZ5Q6TW', category: ['perfumes'], gender: 'other', exclusive: true },
+                { name: 'Stainless Steel Cup Stand / Cup Holder Cup Kitchen Rack', price: 242, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/klwmufk0/kitchen-rack/p/g/p/6405-shopme-store-original-imagyxmnh7baktdt.jpeg?q=60&crop=false', sizes: ['Free Size'], description: 'Min. Order: 1 item', sourceLink: '#', category: ['kitchen-products'], gender: 'other', exclusive: false },
+            ];
+            const allProductsCombined = [...allProducts, ...otherProducts];
+            
+            // --- GLOBAL STATE ---
+            let currentGender = 'boy';
+            let currentSubcategory = 'all';
+            
+            // --- DOM ELEMENTS ---
+            const productGrid = document.getElementById('product-grid');
+            const genderFilterContainer = document.querySelector('.gender-filter-buttons');
+            const subcategorySelect = document.getElementById('subcategory-select');
+            const adminLoginModal = document.getElementById('admin-login-modal-overlay');
+            const adminPanelModal = document.getElementById('admin-panel-modal-overlay');
+            const orderModal = document.getElementById('order-modal-overlay');
+            
+            // --- HELPER FUNCTIONS ---
+            const openModal = (modal) => modal.classList.add('active');
+            const closeModal = (modal) => modal.classList.remove('active');
+            
+            function closeAllSelects(exceptThis) {
+                document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+                    if (wrapper.querySelector('.select-selected') !== exceptThis) {
+                        wrapper.querySelector('.select-items').style.display = 'none';
+                        wrapper.closest('.product-card').classList.remove('product-card--focused');
+                    }
+                });
+            }
+            
+            function setupCustomSelects() {
+                document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+                    const selected = wrapper.querySelector('.select-selected');
+                    const items = wrapper.querySelector('.select-items');
+                    const hiddenSelect = wrapper.querySelector('select');
+                    const card = wrapper.closest('.product-card');
+                    
+                    selected.addEventListener('click', e => {
+                        e.stopPropagation();
+                        closeAllSelects(selected);
+                        items.style.display = items.style.display === 'block' ? 'none' : 'block';
+                        card.classList.toggle('product-card--focused', items.style.display === 'block');
+                    });
+                    
+                    items.querySelectorAll('div').forEach(option => {
+                        option.addEventListener('click', function() {
+                            selected.textContent = this.textContent;
+                            hiddenSelect.value = this.textContent.replace('Size: ', '').trim();
+                            items.style.display = 'none';
+                            card.classList.remove('product-card--focused');
+                        });
+                    });
+                });
+            }
+            
+            // --- RENDERING LOGIC ---
+            function renderProducts() {
+                if (!productGrid) return;
+                let filteredProducts = [];
+                const productsInReverse = [...allProductsCombined].reverse();
+                
+                if (currentGender === 'exclusive') {
+                    filteredProducts = productsInReverse.filter(p => p.exclusive);
+                } else {
+                    const sourceProducts = (currentGender === 'other') ? otherProducts : allProducts;
+                    let genderFiltered = [...sourceProducts].reverse().filter(p => p.gender === currentGender);
+                    
+                    if (currentSubcategory !== 'all') {
+                        filteredProducts = genderFiltered.filter(p => p.category.includes(currentSubcategory));
+                    } else {
+                        filteredProducts = genderFiltered;
+                    }
+                }
+                
+                productGrid.innerHTML = filteredProducts.length > 0 ? filteredProducts.map(product => `
+                    <div class="product-card ${product.exclusive ? 'product-card--exclusive' : ''}">
+                        <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
+                        <div class="product-info">
+                            <h3 class="product-name">${product.name}</h3>
+                            <p class="product-price">₹${product.price} per item</p>
+                            <p class="product-description">${product.description}</p>
+                            <div class="custom-select-wrapper">
+                                <select class="size-selector">${product.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}</select>
+                                <div class="select-selected">Size: ${product.sizes[0] || 'N/A'}</div>
+                                <div class="select-items">${product.sizes.map(size => `<div>Size: ${size}</div>`).join('')}</div>
+                            </div>
+                            <button class="buy-now-btn" data-name="${product.name}" data-price="${product.price}">Buy Now</button>
+                        </div>
+                    </div>`).join('') : `<p style="text-align:center; grid-column: 1/-1;">No products found in this category.</p>`;
+                
+                setupCustomSelects(); // Call this function to make the size selectors work
+            }
+            
+            function populateSubcategoryDropdown() {
+                const subcategoryContainer = document.getElementById('subcategory-container');
+                if (currentGender === 'exclusive' || currentGender === 'other') {
+                    subcategoryContainer.style.display = 'none';
+                    return;
+                }
+                
+                subcategoryContainer.style.display = 'flex';
+                subcategorySelect.innerHTML = '';
+                const allOption = document.createElement('option');
+                allOption.value = 'all';
+                allOption.textContent = 'All Products';
+                subcategorySelect.appendChild(allOption);
+                
+                const genderProducts = allProducts.filter(p => p.gender === currentGender);
+                const categories = [...new Set(genderProducts.flatMap(p => p.category))];
+                
+                categories.sort().forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    subcategorySelect.appendChild(option);
+                });
+                currentSubcategory = 'all';
+                subcategorySelect.value = 'all';
+            }
+            
+            // --- ADMIN PANEL (SOURCE LINKS ONLY) ---
+            function populateAdminPanel() {
+                const tbody = document.getElementById('admin-links-tbody');
+                tbody.innerHTML = allProductsCombined.map(product => `
+                    <tr>
+                        <td>${product.name}</td>
+                        <td><a href="${product.sourceLink}" target="_blank">View Source</a></td>
+                    </tr>`).join('');
+            }
+            
+            // --- EVENT LISTENERS ---
+            document.getElementById('admin-access-link').addEventListener('click', () => {
+                openModal(adminLoginModal);
+            });
+            
+            document.getElementById('admin-login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (document.getElementById('admin-password').value === ADMIN_PASSWORD) {
+                    closeModal(adminLoginModal);
+                    populateAdminPanel();
+                    openModal(adminPanelModal);
+                }
+            });
+            
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => closeModal(e.target.closest('.modal-overlay')));
+            });
+            
+            genderFilterContainer.addEventListener('click', (e) => {
+                const clickedButton = e.target.closest('.gender-btn');
+                if (!clickedButton || clickedButton.classList.contains('active')) return;
+                currentGender = clickedButton.dataset.gender;
+                genderFilterContainer.querySelector('.active').classList.remove('active');
+                clickedButton.classList.add('active');
+                populateSubcategoryDropdown();
+                renderProducts();
+            });
+            
+            subcategorySelect.addEventListener('change', () => {
+                currentSubcategory = subcategorySelect.value;
+                renderProducts();
+            });
+            
+            productGrid.addEventListener('click', e => {
+                if (e.target.classList.contains('buy-now-btn')) {
+                    const card = e.target.closest('.product-card');
+                    const name = e.target.dataset.name;
+                    const price = e.target.dataset.price;
+                    const size = card.querySelector('.size-selector').value;
+                    
+                    document.getElementById('form-product-name-display').textContent = name;
+                    document.getElementById('form-product-price-display').textContent = price;
+                    document.getElementById('form-product-size-display').textContent = size;
+                    openModal(orderModal);
+                }
+            });
+            
+            document.getElementById('order-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const productName = document.getElementById('form-product-name-display').textContent;
+                const productPrice = document.getElementById('form-product-price-display').textContent;
+                const productSize = document.getElementById('form-product-size-display').textContent;
+                const customerName = document.getElementById('customer-name').value;
+                const customerPhone = document.getElementById('customer-phone').value;
+                const customerAddress = document.getElementById('customer-address').value;
+                const quantity = document.getElementById('customer-quantity').value;
+                
+                const message = `*🛍️ New Order Request!*\n\n*Product:* ${productName}\n*Price:* ₹${productPrice} per item\n*Size:* ${productSize}\n*Quantity:* ${quantity}\n\n---\n\n*Customer Details:*\n*Name:* ${customerName}\n*Phone:* ${customerPhone}\n*Address:* ${customerAddress}`;
+                const whatsappUrl = `https://wa.me/${ADMIN_PHONE_NUMBER}?text=${encodeURIComponent(message.trim())}`;
+                
+                window.open(whatsappUrl, '_blank');
+                closeModal(orderModal);
+                e.target.reset();
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.custom-select-wrapper')) {
+                    closeAllSelects(null);
+                }
+            });
+            
+            // --- INITIALIZATION ---
+            populateSubcategoryDropdown();
+            renderProducts();
+        });
+    </script>
+    <!-- ======================= JAVASCRIPT LOGIC END HERE ======================= -->
+</body>
+</html>
