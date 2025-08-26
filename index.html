@@ -7,6 +7,79 @@
     
     <!-- ======================= CSS STYLES START HERE ======================= -->
     <style>
+    
+            /* ======================= SKELETON LOADER STYLES START HERE ======================= */
+        @keyframes shimmer-animation {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .skeleton-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px 20px 5px 5px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .skeleton-image {
+            width: 100%;
+            height: 280px; /* Adjust height to match your product images */
+            background-color: #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton-info {
+            padding: 1.5rem;
+        }
+
+        .skeleton-text {
+            height: 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skeleton-title {
+            height: 1.8rem;
+            width: 80%;
+        }
+
+        .skeleton-price {
+            width: 40%;
+            height: 1.5rem;
+        }
+
+        .skeleton-button {
+            height: 3rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            background-color: #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* The shimmer/shine effect */
+        .skeleton-image::before,
+        .skeleton-text::before,
+        .skeleton-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: shimmer-animation 1.5s infinite linear;
+        }
+        /* ======================= SKELETON LOADER STYLES END HERE ======================= */
+
+    
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
         :root {
             --bg-gradient: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
@@ -141,8 +214,7 @@
     </style>
 </head>
 <body>
-    <div id="preloader"><div class="spinner"></div></div>
-
+   
     <!-- CHANGE 3: मेनू के लिए नया HTML स्ट्रक्चर -->
     <div id="nav-backdrop"></div>
     <nav id="main-nav" class="main-nav">
@@ -176,7 +248,50 @@
                     <label for="subcategory-select">Select a Category:</label>
                     <select id="subcategory-select"></select>
                 </div>
-                <div id="product-grid"></div>
+                <div id="product-grid">
+    <div class="skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-info">
+            <div class="skeleton-text skeleton-title"></div>
+            <div class="skeleton-text skeleton-price"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-button"></div>
+        </div>
+    </div>
+    <div class="skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-info">
+            <div class="skeleton-text skeleton-title"></div>
+            <div class="skeleton-text skeleton-price"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-button"></div>
+        </div>
+    </div>
+    <div class="skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-info">
+            <div class="skeleton-text skeleton-title"></div>
+            <div class="skeleton-text skeleton-price"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-button"></div>
+        </div>
+    </div>
+    <div class="skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-info">
+            <div class="skeleton-text skeleton-title"></div>
+            <div class="skeleton-text skeleton-price"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-button"></div>
+        </div>
+    </div>
+    </div>
+
+
             </section>
         </main>
         <footer>
@@ -228,13 +343,7 @@
 
     <!-- ======================= JAVASCRIPT LOGIC START HERE ======================= -->
     <script>
-        // ===== PRELOADER LOGIC =====
-        const preloader = document.getElementById('preloader');
-        const mainContent = document.getElementById('main-content');
-        window.onload = () => {
-            preloader.classList.add('hidden');
-            mainContent.style.opacity = '1';
-        };
+     
 
         // ===== MAIN SCRIPT LOGIC =====
         document.addEventListener('DOMContentLoaded', () => {
@@ -537,9 +646,14 @@
             });
             
             // --- INITIALIZATION ---
-            populateSubcategoryDropdown();
-            renderProducts();
+            // Simulate a network delay to show the skeleton loader
+            setTimeout(() => {
+                populateSubcategoryDropdown();
+                renderProducts();
+            }, 2000); // 2000 milliseconds = 2 seconds delay
+            
         });
     </script>
 </body>
 </html>
+
