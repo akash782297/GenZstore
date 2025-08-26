@@ -59,9 +59,15 @@
 
         .container { width: 90%; max-width: 1200px; margin: 2rem auto; padding: 0 15px; }
         
+        /* === LOGO STYLING === */
+        .store-logo {
+            height: 70px;
+            display: block;
+            margin: 0 auto 1rem auto;
+        }
         
-        
-        
+        h1 { font-size: 3rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
+        h2 { font-size: 2.2rem; font-weight: 400; color: var(--text-light); text-align: center; margin-bottom: 1.5rem; }
 
         /* === GENDER FILTER BUTTONS (BIG BUTTONS) === */
         .gender-filter-buttons {
@@ -249,10 +255,12 @@
     <div id="preloader"><div class="spinner"></div></div>
 
     <div id="main-content">
-        
+        <header class="container">
+            <img src="https://i.ibb.co/KcFw8PwS/Modern-Black-White-Brand-Fashion-Logo-20250826-010113-0000.png" alt="GenZstore Logo" class="store-logo">
+        </header>
         <main class="container">
             <section id="products">
-                <h1 style="text-align: center;">GenZstore</h1>
+                <h2>Discover Your Style</h2>
                 <div class="gender-filter-buttons">
                     <button class="gender-btn active" data-gender="boy">For Boys</button>
                     <button class="gender-btn" data-gender="girl">For Girls</button>
@@ -325,7 +333,6 @@
 
     <!-- ======================= JAVASCRIPT LOGIC START HERE ======================= -->
     <script>
-        // (JavaScript code remains unchanged)
         // ===== PRELOADER LOGIC =====
         const preloader = document.getElementById('preloader');
         const mainContent = document.getElementById('main-content');
@@ -369,6 +376,7 @@
                 { name: 'Printed Men Orange, White T-Shirt', price: 150, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/l/h/q/m-zmbs-vrma-original-imahcecufy7arzpd.jpeg?q=60&crop=false', sizes: ['L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/printed-men-orange-white-t-shirt/p/itmf16dc2ac6496e?pid=XPTHCEDYNYZGHVKZ', category: ['t-shirt'], gender: 'boy', exclusive: true },
                 { name: 'Printed Men White, Black T-Shirt', price: 150, imageUrl: 'https://rukminim3.flixcart.com/image/786/972/xif0q/shopsy-t-shirt/x/p/p/m-zmbs-vrma-original-imahcecu7emq7hhz.jpeg?q=60&crop=false', sizes: ['L', 'XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/printed-men-white-black-t-shirt/p/itmc9222be4e6a10?pid=XPTHCEDYFKNDHYZZ', category: ['t-shirt'], gender: 'boy', exclusive: true },
                 { name: 'Men Striped Casual Green Shirt', price: 299, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-shirt/s/z/o/m-hkv-111-sh-aadi-original-imah4dsgamvb9dpg.jpeg?q=60&crop=false', sizes: ['M', 'L', 'XL'], description: 'Introducing our remarkable Striped Shirt, a true fashion statement that combines classic charm with modern style. Carefully curated and crafted with meticulous attention to detail, this shirt is desig... ', sourceLink: 'https://www.shopsy.in/men-striped-casual-green-shirt/p/itm74dbf0db53d06?pid=XSRGTYZFSHA7ZZK3&marketplace=FLIPKART&cmpid=product.share.pp&_refId=PP.58a85566-04f7-457f-a97c-00d2b6a7f87f.XSRGTYZFSHA7ZZK3&lid=LSTXSRGTYZFSHA7ZZK3DOINEN&_appId=CL', category: ['shirt'], gender: 'boy', exclusive: true },
+                { name: 'Men Black Sandals', price: 379, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/l3ahpjk0/shopsy-sandal/v/p/z/9-sportblk-sport-black-original-imagefqysrzchxnh.jpeg?q=60&crop=false', sizes: ['7', '8', '9'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/men-black-sandals/p/itm512d114616e38?pid=XSNGG9Z5DHXZYT3S', category: ['footwear'], gender: 'boy', exclusive: false },
                 
                 // --- GIRL PRODUCTS ---
                 { name: 'Printed Women White, Pink T-Shirt', price: 207, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-t-shirt/j/m/b/xl-combo-polyester-women-white-peach-tshirt-attirea-original-imahdp2v7ysgzg9z.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/printed-women-white-pink-t-shirt/p/itmcc30846f493c8?pid=XPTHDP2VKXA7V4EB', category: ['t-shirt', 'shorts'], gender: 'girl', exclusive: false },
@@ -384,9 +392,7 @@
                 { name: 'Women Chikan Embroidery Kurti (Multicolor)', price: 229, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-kurta/t/o/3/m-pompom-top-combo-viranchi-original-imagusuzm3akqebb.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL', '3XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/women-chikan-embroidery-kurta/p/itmaa309db83d321?pid=KUUGWME2TZGUFZ94', category: ['dress'], gender: 'girl', exclusive: false },
                 { name: 'Women Printed Kurti (Multicolor)', price: 264, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/kurta/h/b/p/s-bada-gala-maroon-fingure-pink-auzaai-collection-original-imahdugyrsjtfvhg.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL', '3XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/women-printed-kurta/p/itm0e5599a444995?pid=KUUHDVJPRWAQZGHK', category: ['dress'], gender: 'girl', exclusive: false },
                 { name: 'Women Kurti and Dupatta Set', price: 499, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-kurta/x/a/3/xl-rani-pink-1-fillwork-original-imahbzvpryxg38ey.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/women-kurta-dupatta-set/p/itm16ff359cc6539?pid=SEVHBPK76J4RFVZG', category: ['dress'], gender: 'girl', exclusive: false },
-                
-                // --- NEWLY ADDED BOY'S PRODUCT ---
-                { name: 'Men Black Sandals', price: 379, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/l3ahpjk0/shopsy-sandal/v/p/z/9-sportblk-sport-black-original-imagefqysrzchxnh.jpeg?q=60&crop=false', sizes: ['7', '8', '9'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/men-black-sandals/p/itm512d114616e38?pid=XSNGG9Z5DHXZYT3S', category: ['footwear'], gender: 'boy', exclusive: false }
+                { name: 'Bellavita Date Perfume for Women|Notes of Pink Pepper, Red Fruits| Eau de Parfum - 20 ml (For Women)', price: 148, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/perfume/s/f/o/20-date-women-perfume-with-notes-of-pink-pepper-red-fruits-long-original-imagzzdybzuqcxyf.jpeg?q=60&crop=false', sizes: ['Free Size'], description: 'Min. Order: 2 items', sourceLink: '#', category: ['perfumes'], gender: 'girl', exclusive: false }
             ];
             
             // --- OTHERS CATEGORY PRODUCTS (can be added here) ---
@@ -394,6 +400,8 @@
                 { name: 'Wayfarer, Sports, Spectacle , Retro Square, Oval Sunglasses', price: 150, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/sunglass/v/y/k/free-size-rdy076-imported-wayfare-roadway-original-imah3geegppq4gzk.jpeg?q=60&crop=false', sizes: ['Free Size'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/wayfarer-sports-spectacle-retro-square-oval-sunglasses/p/itm14b60b56fa74f?pid=SXNHAKT9CDHMXFYF', category: ['glasses'], gender: 'other', exclusive: true },
                 { name: 'winelam SRK tam doa diptyqeu trending Eau de Parfum - 50 ml', price: 699, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/perfume/l/j/u/50-srk-tam-dao-diptyque-trending-perfume-eau-de-parfum-winelam-original-imahbxugzsnwpejh.jpeg?q=60&crop=false', sizes: ['50 ml'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/winelam-srk-tam-doa-diptyqeu-trending-eau-de-parfum-50-ml/p/itm6c347db5fdee3?pid=VSZHDNXYNYZ5Q6TW', category: ['perfumes'], gender: 'other', exclusive: true },
                 { name: 'Stainless Steel Cup Stand / Cup Holder Cup Kitchen Rack', price: 242, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/klwmufk0/kitchen-rack/p/g/p/6405-shopme-store-original-imagyxmnh7baktdt.jpeg?q=60&crop=false', sizes: ['Free Size'], description: 'Min. Order: 1 item', sourceLink: '#', category: ['kitchen-products'], gender: 'other', exclusive: false },
+                { name: 'Push Chopper (Press and chop Technology ) 950ML with 4 Stainless Steel Blades Vegetable & Fruit Chopper (1 Push Chopper)', price: 199, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/chopper/n/t/g/push-chopper-quick-chopper-chop-churn-vegetables-dry-fruits-push-original-imahbbzfqn6pwesm.jpeg?q=60&crop=false', sizes: ['Free Size'], description: '950ML with 4 Blades', sourceLink: 'https://www.shopsy.in/push-chopper-press-chop-technology-950ml-4-stainless-steel-blades-vegetable-fruit/p/itm1fa2620bb6dd7?pid=XCOGGFHAKNS6HYYY', category: ['kitchen-products'], gender: 'other', exclusive: true },
+                { name: 'Attractive push chopper Vegetable & Fruit Chopper (2 in 1 puch chopper)', price: 196, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/chopper/k/u/n/kitchen-tool-push-chopper-prajjwalpvt-original-imah23cud6kpnnf2.jpeg?q=60&crop=false', sizes: ['Free Size'], description: '2 in 1 Push Chopper', sourceLink: 'https://www.shopsy.in/attractive-push-chopper-vegetable-fruit/p/itm3aee45a2f5734?pid=XCOH29P8GVQVF2ZC', category: ['kitchen-products'], gender: 'other', exclusive: false }
             ];
             const allProductsCombined = [...allProducts, ...otherProducts];
             
