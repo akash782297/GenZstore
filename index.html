@@ -18,138 +18,57 @@
             --border-color: rgba(255, 255, 255, 0.5);
             --neon-cyan: #00e5ff;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; /* CHANGE 1: नीले रंग का फ्लैश हटाने के लिए */ }
         body { font-family: 'Poppins', sans-serif; background-image: var(--bg-gradient); color: var(--text-dark); line-height: 1.7; overflow-x: hidden; min-height: 100vh; position: relative; }
-        body.modal-open { overflow: hidden; }
+        body.modal-open, body.nav-open { overflow: hidden; } /* CHANGE 3: मेनू खुलने पर स्क्रॉल रोकने के लिए */
         body::before, body::after { content: ''; position: absolute; z-index: -1; border-radius: 50%; filter: blur(100px); }
         body::before { width: 300px; height: 300px; background-color: rgba(52, 152, 219, 0.2); top: 5%; left: 10%; }
         body::after { width: 250px; height: 250px; background-color: rgba(0, 229, 255, 0.15); bottom: 10%; right: 15%; }
 
-        /* === PRELOADER STYLING === */
-        #preloader {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background-color: #fdfbfb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.7s ease, visibility 0.7s ease;
-        }
-        #preloader.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid rgba(0, 0, 0, 0.1);
-            border-top-color: var(--accent-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        body.loading #main-content {
-            opacity: 0;
-            visibility: hidden;
-        }
+        #preloader { position: fixed; inset: 0; z-index: 9999; background-color: #fdfbfb; display: flex; align-items: center; justify-content: center; transition: opacity 0.7s ease, visibility 0.7s ease; }
+        #preloader.hidden { opacity: 0; visibility: hidden; }
+        .spinner { width: 60px; height: 60px; border: 6px solid rgba(0, 0, 0, 0.1); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        body.loading #main-content { opacity: 0; visibility: hidden; }
 
         .container { width: 90%; max-width: 1200px; margin: 2rem auto; padding: 0 15px; }
         
-        /* === LOGO STYLING === */
-        .store-logo {
-            height: 150px;
-            display: block;
-            margin: 0 auto 0rem auto;
-        }
+        /* === HEADER & NEW MENU STYLES START === (CHANGE 3) */
+        header.container { display: flex; justify-content: center; align-items: center; position: relative; }
+        .store-logo { height: 120px; /* Logo size adjusted */ display: block; margin: 0 auto; }
+
+        .menu-button { width: 40px; height: 30px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 1101; }
+        .menu-button span { width: 100%; height: 4px; background-color: var(--text-dark); border-radius: 2px; transition: all 0.3s ease; }
+        .menu-button.active span:nth-child(1) { transform: translateY(13px) rotate(45deg); }
+        .menu-button.active span:nth-child(2) { opacity: 0; }
+        .menu-button.active span:nth-child(3) { transform: translateY(-13px) rotate(-45deg); }
+
+        .main-nav { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background-color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 1100; transition: right 0.4s ease-in-out; display: flex; align-items: center; justify-content: center; box-shadow: -5px 0 25px rgba(0,0,0,0.1); }
+        .main-nav.open { right: 0; }
+        .main-nav ul { list-style: none; padding: 0; }
+        .main-nav ul li { margin: 2.5rem 0; text-align: center; }
+        .main-nav ul li a { color: var(--text-dark); text-decoration: none; font-size: 1.5rem; font-weight: 600; transition: color 0.3s ease; }
+        .main-nav ul li a:hover { color: var(--accent-color); }
+        #nav-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1099; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease; }
+        #nav-backdrop.visible { opacity: 1; visibility: visible; }
+        /* === HEADER & NEW MENU STYLES END === */
         
         h1 { font-size: 3rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
         h2 { font-size: 2.2rem; font-weight: 400; color: var(--text-light); text-align: center; margin-bottom: 1.5rem; }
 
-        /* === GENDER FILTER BUTTONS (BIG BUTTONS) === */
-        .gender-filter-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        .gender-btn {
-            padding: 0.6rem 1.8rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border: 2px solid var(--accent-color);
-            background: transparent;
-            color: var(--accent-color);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .gender-btn:hover {
-            background-color: var(--accent-hover);
-            color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(41, 128, 185, 0.3);
-        }
-        .gender-btn.active {
-            background-color: var(--accent-color);
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
-        }
+        .gender-filter-buttons { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .gender-btn { padding: 0.6rem 1.8rem; font-size: 1rem; font-weight: 600; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); border-radius: 10px; cursor: pointer; transition: all 0.3s ease; }
+        .gender-btn:hover { background-color: var(--accent-hover); color: #fff; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(41, 128, 185, 0.3); }
+        .gender-btn.active { background-color: var(--accent-color); color: #fff; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4); }
 
-        /* === SUBCATEGORY SELECT DROPDOWN STYLING === */
-        .select-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 3rem;
-        }
-        .select-container label {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
-        }
-        #subcategory-select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            padding: 0.9rem 3.5rem 0.9rem 2rem;
-            font-size: 1.1rem;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            color: var(--text-dark);
-            background-color: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50px;
-            cursor: pointer;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-            background-repeat: no-repeat;
-            background-position: right 1.5rem center;
-            background-size: .7em auto;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-        #subcategory-select:hover {
-            border-color: var(--accent-color);
-            box-shadow: 0 6px 25px rgba(52, 152, 219, 0.2);
-        }
-        #subcategory-select:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.3);
-        }
+        .select-container { display: flex; justify-content: center; margin-bottom: 3rem; }
+        .select-container label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+        #subcategory-select { -webkit-appearance: none; -moz-appearance: none; appearance: none; padding: 0.9rem 3.5rem 0.9rem 2rem; font-size: 1.1rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--text-dark); background-color: rgba(255, 255, 255, 0.35); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 50px; cursor: pointer; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 1.5rem center; background-size: .7em auto; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
+        #subcategory-select:hover { border-color: var(--accent-color); box-shadow: 0 6px 25px rgba(52, 152, 219, 0.2); }
+        #subcategory-select:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.3); }
 
         #product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; align-items: start; }
-        .product-card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
+        .product-card { background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 20px 20px 5px 5px; /* CHANGE 2: कार्ड को नीचे से राउंड करने के लिए */ box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
         .product-card:hover { transform: translateY(-12px); box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15); }
         .product-card--focused { overflow: visible; z-index: 10; }
         .product-image { width: 100%; }
@@ -171,13 +90,6 @@
 
         footer { text-align: center; padding: 2.5rem 0; margin-top: 4rem; border-top: 1px solid #e0e0e0; }
         footer p { font-size: 1rem; font-weight: 300; color: var(--text-light); margin-bottom: 1rem; }
-        .footer-links { display: flex; justify-content: center; align-items: center; gap: 20px; }
-        .footer-links a, #admin-access-link { color: var(--accent-color); text-decoration: none; font-weight: 600; }
-        #admin-access-link { cursor: pointer; }
-        .social-link a { display: inline-block; transition: transform 0.3s ease; }
-        .social-link a:hover { transform: scale(1.1); }
-        .social-link svg { width: 32px; height: 32px; fill: var(--text-light); transition: fill 0.3s ease; }
-        .social-link a:hover svg { fill: var(--accent-color); }
 
         .modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
@@ -201,62 +113,55 @@
         #admin-links-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
         #admin-links-table th, #admin-links-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(0, 229, 255, 0.3); vertical-align: middle; }
         #admin-links-table th { color: var(--neon-cyan); }
-        #admin-links-table a { display: inline-block; padding: 8px 18px; border: 1px solid var(--neon-cyan); border-radius: 8px; color: var(--neon-cyan); background-color: transparent; text-decoration: none; font-weight: 600; transition: all 0.3s ease; cursor: pointer; }
+        #admin-links-table td { display: flex; align-items: center; }
+        #admin-links-table a { display: inline-block; margin-left: auto; padding: 8px 18px; border: 1px solid var(--neon-cyan); border-radius: 8px; color: var(--neon-cyan); background-color: transparent; text-decoration: none; font-weight: 600; transition: all 0.3s ease; cursor: pointer; }
         #admin-links-table a:hover { background-color: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan); transform: translateY(-2px); }
+
+        /* CHANGE 4: एडमिन पैनल में प्रोडक्ट की फोटो के लिए स्टाइल */
+        .admin-panel-product-img {
+            width: 45px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
 
         @media (max-width: 768px) { 
             h1 { font-size: 2.5rem; } 
             h2 { font-size: 1.8rem; } 
+            .store-logo { height: 100px; }
         }
 
-        /* === EXCLUSIVE PRODUCT STYLING === */
-        @keyframes animate-gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .product-card--exclusive::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            background: linear-gradient(125deg, #ffc371, #ff5f6d, #833ab4, #00d4ff);
-            background-size: 400% 400%;
-            animation: animate-gradient 10s ease infinite;
-            opacity: 0.15;
-            transition: opacity 0.3s ease;
-        }
-        .product-card--exclusive:hover::before {
-            opacity: 0.25;
-        }
-        .product-card .product-image,
-        .product-card .product-info {
-            position: relative;
-            z-index: 1;
-        }
-        .product-card--exclusive::after {
-            content: 'EXCLUSIVE';
-            position: absolute;
-            top: 10px;
-            right: -35px;
-            z-index: 2;
-            background-color: #ffae00;
-            color: #000;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 5px 30px;
-            transform: rotate(45deg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+        @keyframes animate-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .product-card--exclusive::before { content: ''; position: absolute; inset: 0; z-index: 0; background: linear-gradient(125deg, #ffc371, #ff5f6d, #833ab4, #00d4ff); background-size: 400% 400%; animation: animate-gradient 10s ease infinite; opacity: 0.15; transition: opacity 0.3s ease; }
+        .product-card--exclusive:hover::before { opacity: 0.25; }
+        .product-card .product-image, .product-card .product-info { position: relative; z-index: 1; }
+        .product-card--exclusive::after { content: 'EXCLUSIVE'; position: absolute; top: 10px; right: -35px; z-index: 2; background-color: #ffae00; color: #000; font-size: 0.7rem; font-weight: 700; padding: 5px 30px; transform: rotate(45deg); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
     </style>
-    <!-- ======================= CSS STYLES END HERE ======================= -->
 </head>
 <body>
     <div id="preloader"><div class="spinner"></div></div>
 
+    <!-- CHANGE 3: मेनू के लिए नया HTML स्ट्रक्चर -->
+    <div id="nav-backdrop"></div>
+    <nav id="main-nav" class="main-nav">
+        <ul>
+            <li><a href="#" id="nav-admin-link">Admin Access</a></li>
+            <li><a href="https://www.instagram.com/undermaintnance?igsh=bmx3NDV2eGlsYjY2" target="_blank">Instagram</a></li>
+            <li><a href="#" id="nav-whatsapp-link" target="_blank">Contact on WhatsApp</a></li>
+        </ul>
+    </nav>
+
     <div id="main-content">
         <header class="container">
-            <img src="https://i.ibb.co/1JzzM5Vj/IMG-20250826-085547-1.png" alt="GenZstore Logo" class="store-logo">
+            <img src="https://i.ibb.co/8ncQVyqT/Blue-and-Gold-Elegant-Graduation-Ceremony-Banner-Landscape-20250826-161144-0000.png" alt="GenZstore Logo" class="store-logo">
+            <!-- CHANGE 3: मेनू बटन का HTML -->
+            <div id="menu-button" class="menu-button">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </header>
         <main class="container">
             <section id="products">
@@ -271,24 +176,16 @@
                     <label for="subcategory-select">Select a Category:</label>
                     <select id="subcategory-select"></select>
                 </div>
-                <div id="product-grid">
-                    <!-- Products will be loaded here by JavaScript -->
-                </div>
+                <div id="product-grid"></div>
             </section>
         </main>
         <footer>
             <span>Our products will be uploaded soon...</span>
             <p>Created by AKASH DUBEY</p>
-            <div class="footer-links">
-                <div class="social-link">
-                    <a href="https://www.instagram.com/undermaintnance?igsh=bmx3NDV2eGlsYjY2" target="_blank" title="Follow on Instagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.74 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.74 24 12 24s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98C23.986 15.667 24 15.26 24 12s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98C15.667.014 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"/></svg></a>
-                </div>
-                <span id="admin-access-link">Admin Access</span>
-            </div>
         </footer>
     </div>
 
-    <!-- Order Modal -->
+    <!-- Modals -->
     <div id="order-modal-overlay" class="modal-overlay">
         <div id="order-form-container" class="modal-container">
             <span class="close-btn">&times;</span>
@@ -307,7 +204,6 @@
         </div>
     </div>
 
-    <!-- Admin Login Modal -->
     <div id="admin-login-modal-overlay" class="modal-overlay">
         <div class="modal-container">
             <span class="close-btn">&times;</span>
@@ -319,13 +215,12 @@
         </div>
     </div>
     
-    <!-- Admin Panel Modal (Source Links Only) -->
     <div id="admin-panel-modal-overlay" class="modal-overlay">
         <div id="admin-panel-modal-container" class="modal-container">
             <span class="close-btn">&times;</span>
             <h3>Product Source Links</h3>
             <table id="admin-links-table">
-                <thead><tr><th>Product Name</th><th>Source Link</th></tr></thead>
+                <thead><tr><th>Product</th><th>Source Link</th></tr></thead>
                 <tbody id="admin-links-tbody"></tbody>
             </table>
         </div>
@@ -340,7 +235,6 @@
             preloader.classList.add('hidden');
             mainContent.style.opacity = '1';
         };
-
 
         // ===== MAIN SCRIPT LOGIC =====
         document.addEventListener('DOMContentLoaded', () => {
@@ -392,10 +286,10 @@
                 { name: 'Women Chikan Embroidery Kurti (Multicolor)', price: 229, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-kurta/t/o/3/m-pompom-top-combo-viranchi-original-imagusuzm3akqebb.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL', '3XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/women-chikan-embroidery-kurta/p/itmaa309db83d321?pid=KUUGWME2TZGUFZ94', category: ['dress'], gender: 'girl', exclusive: false },
                 { name: 'Women Printed Kurti (Multicolor)', price: 264, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/kurta/h/b/p/s-bada-gala-maroon-fingure-pink-auzaai-collection-original-imahdugyrsjtfvhg.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL', '3XL'], description: 'Min. Order: 2 items', sourceLink: 'https://www.shopsy.in/women-printed-kurta/p/itm0e5599a444995?pid=KUUHDVJPRWAQZGHK', category: ['dress'], gender: 'girl', exclusive: false },
                 { name: 'Women Kurti and Dupatta Set', price: 499, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/shopsy-kurta/x/a/3/xl-rani-pink-1-fillwork-original-imahbzvpryxg38ey.jpeg?q=60&crop=false', sizes: ['S', 'M', 'L', 'XL', 'XXL'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/women-kurta-dupatta-set/p/itm16ff359cc6539?pid=SEVHBPK76J4RFVZG', category: ['dress'], gender: 'girl', exclusive: false },
-                { name: 'Bellavita Date Perfume for Women|Notes of Pink Pepper, Red Fruits| Eau de Parfum - 20 ml (For Women)', price: 148, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/perfume/s/f/o/20-date-women-perfume-with-notes-of-pink-pepper-red-fruits-long-original-imagzzdybzuqcxyf.jpeg?q=60&crop=false', sizes: ['Free Size'], description: 'Min. Order: 2 items', sourceLink: '#', category: ['perfumes'], gender: 'girl', exclusive: false }
+                { name: 'Bellavita Date Perfume for Women|Notes of Pink Pepper, Red Fruits| Eau de Parfum - 20 ml (For Women)', price: 148, imageUrl: 'https://bellavitaorganic.com/cdn/shop/files/4_c99b932f-3776-441d-a29d-e78cfd2194c6.jpg?v=1712925686&width=1100', sizes: ['Free Size'], description: 'Min. Order: 2 items', sourceLink: '#', category: ['perfumes'], gender: 'girl', exclusive: false }
             ];
             
-            // --- OTHERS CATEGORY PRODUCTS (can be added here) ---
+            // --- OTHERS CATEGORY PRODUCTS ---
             const otherProducts = [
                 { name: 'Wayfarer, Sports, Spectacle , Retro Square, Oval Sunglasses', price: 150, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/sunglass/v/y/k/free-size-rdy076-imported-wayfare-roadway-original-imah3geegppq4gzk.jpeg?q=60&crop=false', sizes: ['Free Size'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/wayfarer-sports-spectacle-retro-square-oval-sunglasses/p/itm14b60b56fa74f?pid=SXNHAKT9CDHMXFYF', category: ['glasses'], gender: 'other', exclusive: true },
                 { name: 'winelam SRK tam doa diptyqeu trending Eau de Parfum - 50 ml', price: 699, imageUrl: 'https://rukminim3.flixcart.com/image/784/972/xif0q/perfume/l/j/u/50-srk-tam-dao-diptyque-trending-perfume-eau-de-parfum-winelam-original-imahbxugzsnwpejh.jpeg?q=60&crop=false', sizes: ['50 ml'], description: 'Min. Order: 1 item', sourceLink: 'https://www.shopsy.in/winelam-srk-tam-doa-diptyqeu-trending-eau-de-parfum-50-ml/p/itm6c347db5fdee3?pid=VSZHDNXYNYZ5Q6TW', category: ['perfumes'], gender: 'other', exclusive: true },
@@ -417,9 +311,22 @@
             const adminPanelModal = document.getElementById('admin-panel-modal-overlay');
             const orderModal = document.getElementById('order-modal-overlay');
             
+            // --- NEW MENU ELEMENTS (CHANGE 3) ---
+            const menuButton = document.getElementById('menu-button');
+            const mainNav = document.getElementById('main-nav');
+            const navBackdrop = document.getElementById('nav-backdrop');
+            const navAdminLink = document.getElementById('nav-admin-link');
+            const navWhatsappLink = document.getElementById('nav-whatsapp-link');
+
             // --- HELPER FUNCTIONS ---
-            const openModal = (modal) => modal.classList.add('active');
-            const closeModal = (modal) => modal.classList.remove('active');
+            const openModal = (modal) => {
+                modal.classList.add('active');
+                document.body.classList.add('modal-open');
+            };
+            const closeModal = (modal) => {
+                modal.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            };
             
             function closeAllSelects(exceptThis) {
                 document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
@@ -439,17 +346,19 @@
                     
                     selected.addEventListener('click', e => {
                         e.stopPropagation();
-                        closeAllSelects(selected);
-                        items.style.display = items.style.display === 'block' ? 'none' : 'block';
-                        card.classList.toggle('product-card--focused', items.style.display === 'block');
+                        const isAlreadyOpen = items.style.display === 'block';
+                        closeAllSelects(null);
+                        if (!isAlreadyOpen) {
+                            items.style.display = 'block';
+                            card.classList.add('product-card--focused');
+                        }
                     });
                     
                     items.querySelectorAll('div').forEach(option => {
                         option.addEventListener('click', function() {
                             selected.textContent = this.textContent;
                             hiddenSelect.value = this.textContent.replace('Size: ', '').trim();
-                            items.style.display = 'none';
-                            card.classList.remove('product-card--focused');
+                            closeAllSelects(null);
                         });
                     });
                 });
@@ -490,7 +399,7 @@
                         </div>
                     </div>`).join('') : `<p style="text-align:center; grid-column: 1/-1;">No products found in this category.</p>`;
                 
-                setupCustomSelects(); // Call this function to make the size selectors work
+                setupCustomSelects();
             }
             
             function populateSubcategoryDropdown() {
@@ -520,27 +429,53 @@
                 subcategorySelect.value = 'all';
             }
             
-            // --- ADMIN PANEL (SOURCE LINKS ONLY) ---
+            // --- ADMIN PANEL ---
             function populateAdminPanel() {
                 const tbody = document.getElementById('admin-links-tbody');
                 tbody.innerHTML = allProductsCombined.map(product => `
                     <tr>
-                        <td>${product.name}</td>
+                        <td>
+                            <img src="${product.imageUrl}" alt="${product.name}" class="admin-panel-product-img">
+                            <span>${product.name}</span>
+                        </td>
                         <td><a href="${product.sourceLink}" target="_blank">View Source</a></td>
                     </tr>`).join('');
             }
             
             // --- EVENT LISTENERS ---
-            document.getElementById('admin-access-link').addEventListener('click', () => {
-                openModal(adminLoginModal);
+            function closeSideNav() {
+                menuButton.classList.remove('active');
+                mainNav.classList.remove('open');
+                navBackdrop.classList.remove('visible');
+                document.body.classList.remove('nav-open');
+            }
+
+            menuButton.addEventListener('click', () => {
+                menuButton.classList.toggle('active');
+                mainNav.classList.toggle('open');
+                navBackdrop.classList.toggle('visible');
+                document.body.classList.toggle('nav-open');
             });
+
+            navBackdrop.addEventListener('click', closeSideNav);
+
+            navAdminLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeSideNav();
+                setTimeout(() => openModal(adminLoginModal), 300); // Wait for nav to close
+            });
+            
+            const whatsappMessage = encodeURIComponent("Hello! I'm interested in your products.");
+            navWhatsappLink.href = `https://wa.me/${ADMIN_PHONE_NUMBER}?text=${whatsappMessage}`;
             
             document.getElementById('admin-login-form').addEventListener('submit', (e) => {
                 e.preventDefault();
-                if (document.getElementById('admin-password').value === ADMIN_PASSWORD) {
+                const passwordInput = document.getElementById('admin-password');
+                if (passwordInput.value === ADMIN_PASSWORD) {
                     closeModal(adminLoginModal);
                     populateAdminPanel();
-                    openModal(adminPanelModal);
+                    setTimeout(() => openModal(adminPanelModal), 300);
+                    passwordInput.value = '';
                 }
             });
             
@@ -606,6 +541,5 @@
             renderProducts();
         });
     </script>
-    <!-- ======================= JAVASCRIPT LOGIC END HERE ======================= -->
 </body>
 </html>
