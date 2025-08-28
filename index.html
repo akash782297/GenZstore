@@ -205,7 +205,48 @@
     .product-card { background: var(--card-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 20px 20px 5px 5px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; will-change: transform; }
     .product-card:hover { transform: translateY(-12px); box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15); }
     .product-card--focused { overflow: visible; z-index: 10; }
-    .product-image { width: 100%; height: auto; object-fit: contain; }
+    .product-image-container {
+        width: 100%;
+        height: 280px; /* या जो भी ऊंचाई आप चाहते हैं */
+        position: relative;
+        overflow: hidden;
+    }
+    .product-image-wrapper {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.3s ease-in-out;
+    }
+    .product-image-wrapper img {
+        flex-shrink: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* या contain, जो आपको सही लगे */
+    }
+    .slider-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        line-height: 1;
+        z-index: 10;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+    }
+    .slider-btn:hover {
+        opacity: 1;
+    }
+    .slider-btn.prev {
+        left: 10px;
+    }
+    .slider-btn.next {
+        right: 10px;
+    }
     .product-info { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
     .product-name { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
     .product-price { font-size: 1.3rem; font-weight: 700; color: var(--accent-color); margin-bottom: 0.5rem; }
@@ -296,7 +337,7 @@
     @keyframes animate-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     .product-card--exclusive::before { content: ''; position: absolute; inset: 0; z-index: 0; background: linear-gradient(125deg, #ffc371, #ff5f6d, #833ab4, #00d4ff); background-size: 400% 400%; animation: animate-gradient 10s ease infinite; opacity: 0.15; transition: opacity 0.3s ease; }
     .product-card--exclusive:hover::before { opacity: 0.25; }
-    .product-card .product-image, .product-card .product-info { position: relative; z-index: 1; }
+    .product-card .product-info { position: relative; z-index: 1; }
     .product-card--exclusive::after { content: 'EXCLUSIVE'; position: absolute; top: 10px; right: -35px; z-index: 2; background-color: #ffae00; color: #000; font-size: 0.7rem; font-weight: 700; padding: 5px 30px; transform: rotate(45deg); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
     /* Main Filter Container for better arrangement */
@@ -428,6 +469,7 @@
                     <div class="select-container" id="sort-by-container">
                         <label for="sort-by-select"></label>
                         <select id="sort-by-select">
+                            <option value="newest">Newest First</option>
                             <option value="default">PRICE</option>
                             <option value="price-asc">Low to High</option>
                             <option value="price-desc">High to Low</option>
@@ -520,7 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortBySelect = document.getElementById('sort-by-select');
     const searchInput = document.getElementById('search-input');
     
-    // --- PRODUCT DATA FETCHING ---
+    // --- PRODUCT DATA FETCHING (UPDATED) ---
     async function fetchProducts() {
         try {
             // Display skeleton loaders
@@ -537,6 +579,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             allProductsCombined = await response.json();
             
+            // **CHANGE 1: Sort by ID in descending order to show newest products first**
+            allProductsCombined.sort((a, b) => b.id - a.id);
+
             // Wait for a short delay before rendering for a smoother loading feel
             setTimeout(() => {
                 populateSubcategoryDropdown();
@@ -603,7 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return products;
     }
 
-    // --- RENDERING LOGIC ---
+    // --- RENDERING LOGIC (UPDATED) ---
     function renderProducts() {
         if (!productGrid || allProductsCombined.length === 0) {
             productGrid.innerHTML = `<p style="text-align:center; grid-column: 1/-1;">No products found.</p>`;
@@ -612,14 +657,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let filteredProducts = [];
         
+        // **CHANGE 2: Logic for "Others" category**
         if (currentGender === 'exclusive') {
             filteredProducts = allProductsCombined.filter(p => p.exclusive);
+        } else if (currentGender === 'other') {
+            filteredProducts = allProductsCombined.filter(p => p.gender === 'other' && !p.exclusive);
         } else {
             filteredProducts = allProductsCombined.filter(p => p.gender === currentGender);
-            
-            if (currentSubcategory !== 'all') {
-                filteredProducts = filteredProducts.filter(p => p.category.includes(currentSubcategory));
-            }
+        }
+
+        if (currentGender !== 'exclusive' && currentSubcategory !== 'all') {
+            filteredProducts = filteredProducts.filter(p => p.category.includes(currentSubcategory));
         }
         
         const searchQuery = searchInput.value.toLowerCase();
@@ -630,7 +678,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortedProducts = getSortedProducts(filteredProducts, currentSort);
         
         if (sortedProducts.length === 0) {
-            productGrid.innerHTML = `<p style="text-align:center; grid-column: 1/-1;">No products found in this category.</p>`;
+            productGrid.innerHTML = `<p style="text-align:center; grid-column: 1/-1;">No products found for the selected criteria.</p>`;
             return;
         }
         
@@ -656,6 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setupCustomSelects();
     }
     
+    // --- DROPDOWN POPULATION (UPDATED) ---
     function populateSubcategoryDropdown() {
         const subcategoryContainer = document.getElementById('subcategory-container');
         if (currentGender === 'exclusive') {
@@ -670,7 +719,14 @@ document.addEventListener('DOMContentLoaded', () => {
         allOption.textContent = 'All Products';
         subcategorySelect.appendChild(allOption);
         
-        const genderProducts = allProductsCombined.filter(p => p.gender === currentGender);
+        let genderProducts;
+        // **CHANGE 3: Logic for "Others" dropdown**
+        if (currentGender === 'other') {
+            genderProducts = allProductsCombined.filter(p => p.gender === 'other' && !p.exclusive);
+        } else {
+            genderProducts = allProductsCombined.filter(p => p.gender === currentGender);
+        }
+        
         const categories = [...new Set(genderProducts.flatMap(p => p.category))];
         
         categories.sort().forEach(cat => {
@@ -726,6 +782,8 @@ document.addEventListener('DOMContentLoaded', () => {
             populateAdminPanel();
             setTimeout(() => openModal(adminPanelModal), 300);
             passwordInput.value = '';
+        } else {
+            alert('Incorrect Password!');
         }
     });
     
@@ -757,7 +815,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderProducts();
     });
     
-    // Naya event listener joda gaya hai, ismein Buy Now aur Share button dono ka logic hai
     productGrid.addEventListener('click', e => {
         if (e.target.classList.contains('buy-now-btn')) {
             const card = e.target.closest('.product-card');
@@ -765,7 +822,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const price = e.target.dataset.price;
             const size = card.querySelector('.size-selector').value;
             
-            const product = allProductsCombined.find(p => p.name === name);
+            const product = allProductsCombined.find(p => decodeURIComponent(p.name) === name);
             if (!product) return;
 
             const quantitySelect = document.getElementById('customer-quantity');
@@ -829,7 +886,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Naya function jo product par scroll karega
     function scrollToProduct(productName) {
         const productCard = document.querySelector(`[data-product-name="${encodeURIComponent(productName)}"]`);
         if (productCard) {
@@ -842,7 +898,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- INITIALIZATION ---
-    // URL ko check karne ke liye fetchProducts() ko is tarah se call kiya gaya hai
     const urlParams = new URLSearchParams(window.location.search);
     const productNameFromUrl = urlParams.get('product');
 
@@ -857,6 +912,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
+
 
 </body>
 </html>
